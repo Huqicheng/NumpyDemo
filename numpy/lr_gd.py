@@ -1,11 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def write2File():
-    with open('filename.txt','a') as file:
-        write_str = '%f %f\n'%(float_data1,float_data2)
-        file.write(write_str)
-
 def readFile(path):
     a = np.loadtxt(path)
     return a
@@ -16,13 +11,21 @@ def splitData(data):
     data_y = data[:,nDim]
     return data_x,data_y
 
+def sigmoid(input):
+    return 1/(1+np.power(np.e,input))
+
+def diffSigmoid(input):
+    return sigmoid(input)*(1-sigmoid(input))
+
+
 def calcGradient(w,dataX,dataY):
     wT = np.transpose(w)
     # w.T*X - Y
-    loss = np.dot(wT,dataX)-dataY
+    loss = dataY - sigmoid(np.dot(wT,dataX))
     # loss*X.T
     grad = np.dot(loss,np.transpose(dataX))
     return grad
+
 
 '''
     batch gradient descent
@@ -35,11 +38,11 @@ def BatchGD(dataX,dataY,learning_rate=0.05):
         # calc gradient
         grad = calcGradient(w,dataX,dataY)
         
-        # w = w - lr*grad
+        # w = w - lr * grad
         w = w - np.transpose(learning_rate*grad)
         
         # convergence
-        if(np.linalg.norm(w-preW)<=np.finfo(float).eps):
+        if(np.linalg.norm(w-preW)<=0.001):
             break
         
         preW = w
@@ -48,7 +51,7 @@ def BatchGD(dataX,dataY,learning_rate=0.05):
 
 if __name__=="__main__":
     #  output of readFile is an ndarray
-    data = readFile('data.txt')
+    data = readFile('data2.txt')
     
     # split data
     data_x,data_y = splitData(data)
@@ -57,20 +60,13 @@ if __name__=="__main__":
     w = BatchGD(data_x,data_y)
     print w
 
-    wT = np.transpose(w)
+    res = (sigmoid(np.dot(w.T,data_x))>0.5)[0]
+
+    print res
+
+
+
     
-    # plot
-    y_dot = [l_y for l_y in data_y]
-    x = [l_x[1] for l_x in np.asarray(np.transpose(data_x))]
-    y = [l_y for l_y in np.asarray(np.dot(wT,data_x))[0]]
-    
-    p=plt.subplot(111)
-    p.axis([0.0,5.01,-1.0,5.5])
-    p.plot(x,y,"g-",label="$f(t)=e^{-t} \cdot \cos (2 \pi t)$")
-    p.plot(x,y_dot,"r*",label="$f(t)=e^{-t} \cdot \cos (2 \pi t)$")
-    plt.show()
-    
-    print y_dot
 
 
 

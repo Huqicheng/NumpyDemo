@@ -81,3 +81,10 @@ print cov(arr_0,arr_1)
 
 
 
+#sigmoid
+def sigmoid(input):
+    return 1/(1+np.power(np.e,input))
+
+print sigmoid(arr_1)
+
+
