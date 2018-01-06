@@ -14,29 +14,35 @@ def splitData(data):
 def sigmoid(input):
     return 1/(1+np.power(np.e,input))
 
-def diffSigmoid(input):
-    return sigmoid(input)*(1-sigmoid(input))
-
 
 def calcGradient(w,dataX,dataY):
     wT = np.transpose(w)
-    # w.T*X - Y
+    # Y - sigmoid(w.T*X)
     loss = dataY - sigmoid(np.dot(wT,dataX))
     # loss*X.T
     grad = np.dot(loss,np.transpose(dataX))
     return grad
 
 
+def calcGradientWithL2(w,dataX,dataY):
+    wT = np.transpose(w)
+    # Y - sigmoid(w.T*X)
+    loss = dataY - sigmoid(np.dot(wT,dataX))
+    # loss*X.T
+    grad = np.dot(loss,np.transpose(dataX))+wT
+    return grad
+
+
 '''
     batch gradient descent
 '''
-def BatchGD(dataX,dataY,learning_rate=0.05):
+def BatchGD(dataX,dataY,learning_rate=0.05,calcGrad=calcGradient):
     nDim = dataX.shape[0]
     w = np.zeros((nDim,1))
     preW = w
     while (True):
         # calc gradient
-        grad = calcGradient(w,dataX,dataY)
+        grad = calcGrad(w,dataX,dataY)
         
         # w = w - lr * grad
         w = w - np.transpose(learning_rate*grad)
@@ -57,12 +63,19 @@ if __name__=="__main__":
     data_x,data_y = splitData(data)
     data_x = np.transpose(data_x)
     
-    w = BatchGD(data_x,data_y)
-    print w
-
-    res = (sigmoid(np.dot(w.T,data_x))>0.5)[0]
-
+    w = BatchGD(data_x,data_y,calcGrad=calcGradientWithL2)
+    res = (sigmoid(np.dot(w.T,data_x)))[0]
+    print "training with L2 Regularization \n" + str(w)
     print res
+    
+    w2 = BatchGD(data_x,data_y,calcGrad=calcGradient)
+    res2 = (sigmoid(np.dot(w2.T,data_x)))[0]
+    print "training without L2 Regularization \n" + str(w2)
+    print res2
+
+
+
+
 
 
 

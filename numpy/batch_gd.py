@@ -1,11 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def write2File():
-    with open('filename.txt','a') as file:
-        write_str = '%f %f\n'%(float_data1,float_data2)
-        file.write(write_str)
-
 def readFile(path):
     a = np.loadtxt(path)
     return a
@@ -68,6 +63,7 @@ if __name__=="__main__":
     p.axis([0.0,5.01,-1.0,5.5])
     p.plot(x,y,"g-",label="$f(t)=e^{-t} \cdot \cos (2 \pi t)$")
     p.plot(x,y_dot,"r*",label="$f(t)=e^{-t} \cdot \cos (2 \pi t)$")
+    plt.savefig('gd.png')
     plt.show()
     
     print y_dot
